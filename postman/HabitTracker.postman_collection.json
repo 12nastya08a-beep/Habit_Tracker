@@ -1,0 +1,69 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "HabitTracker API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Отримати список звичок",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/habits/",
+          "host": ["{{base_url}}"],
+          "path": ["habits", ""]
+        }
+      }
+    },
+    {
+      "name": "Створити звичку",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Ранкова зарядка\",\n  \"description\": \"15 хвилин розминки щодня\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/habits/",
+          "host": ["{{base_url}}"],
+          "path": ["habits", ""]
+        }
+      }
+    },
+    {
+      "name": "Оновити звичку (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"20 хвилин розминки та йоги\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/habits/1/",
+          "host": ["{{base_url}}"],
+          "path": ["habits", "1", ""]
+        }
+      }
+    }
+  ]
+}
