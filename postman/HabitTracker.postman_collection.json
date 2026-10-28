@@ -1,0 +1,202 @@
+{
+  "info": {
+    "_postman_id": "habit-tracker-complete-collection",
+    "name": "HabitTracker API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Отримати список звичок",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Створити звичку",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Читання\",\n    \"description\": \"Читати 30 хвилин на день\",\n    \"created_at\": \"2026-10-13\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Подивитися одну звичку",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/1/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            "1",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Змінити звичку",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"description\": \"20 хвилин розминки та йоги\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/1/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            "1",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Видалити звичку",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/1/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            "1",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Позначити звичку виконаною",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"date\": \"2026-10-13\",\n    \"is_completed\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/1/logs/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            "1",
+            "logs",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Отримати статистику серій виконання",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/habits/stats/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "habits",
+            "stats",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Сторінка Про нас",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/about/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "about",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
