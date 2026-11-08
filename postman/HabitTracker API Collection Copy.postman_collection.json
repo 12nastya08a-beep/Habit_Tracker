@@ -1,8 +1,10 @@
 {
   "info": {
-    "_postman_id": "habit-tracker-complete-collection",
-    "name": "HabitTracker API Collection",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "c38e8138-e92d-4aaa-ba0d-239ac44dfc4c",
+    "name": "HabitTracker API Collection Copy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55861304",
+    "_collection_link": "https://go.postman.co/collection/55861304-c38e8138-e92d-4aaa-ba0d-239ac44dfc4c?source=collection_link"
   },
   "item": [
     {
@@ -195,6 +197,38 @@
             ""
           ]
         }
+      },
+      "response": []
+    },
+    {
+      "name": "Створити користувача",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Отримати JWT токени(Логін)",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Оновити JWT токен",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Вийти з системи",
+      "request": {
+        "method": "GET",
+        "header": []
       },
       "response": []
     }
