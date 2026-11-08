@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .models import Habit
@@ -8,6 +9,7 @@ from .serializers import HabitSerializer
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def habit_list_create(request):
     """Отримати список усіх звичок або створити нову"""
     if request.method == 'GET':
@@ -26,6 +28,7 @@ def habit_list_create(request):
 
 
 @api_view(['GET', 'PATCH', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def habit_detail(request, pk):
     """Отримати, оновити або видалити конкретну звичку за її ID"""
     habit = get_object_or_404(Habit, pk=pk)
