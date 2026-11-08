@@ -137,6 +137,86 @@
       "contact": "support@habittracker.com"
     }
   ```
+#### Створити користувача (Реєстрація)
+- **Призначення:** Створює новий обліковий запис у системі
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/auth/register/`
+- **Request Body:** 
+```json
+  {
+    "username": "username",
+    "email": "email@example.com",
+    "password": "password",
+    "password_confirmation": "password",
+    "first_name": "name",
+    "last_name": "surname"
+  }
+  ```
+- **Response Status:** `201 Created`
+- **Response Body:**
+  ```json
+    {  
+      "username": "username",
+      "email": "test@example.com",
+      "first_name": "name",
+      "last_name": "surname"
+    }
+  ```
+
+#### Отримати JWT токени (Логін)
+- **Призначення:** Аутентифікує користувача за логіном і паролем та видає пару access і refresh токенів.
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/token/`
+- **Request Body:** 
+```json
+  {
+    "username": "username",
+    "password": "password",
+  }
+  ```
+- **Response Status:** `200 OK`
+- **Response Body:**
+  ```json
+    {  
+    "access": "xxxxxxxx...",
+    "refresh": "xxxxxxxx..."
+    }
+  ```
+#### Оновити JWT токен
+- **Призначення:** Дозволяє отримати новий access-токен за допомогою дійсного refresh-токена.
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/token/refresh/`
+- **Request Body:** 
+```json
+  {
+    "refresh": "xxxxxxxx..."
+  }
+  ```
+- **Response Status:** `200 OK`
+- **Response Body:**
+  ```json
+    {  
+    "access": "xxxxxxxx...",  
+    }
+  ```
+
+#### Вийти з системи (Logout / Blacklist)
+- **Призначення:** Інвалідує refresh-токен, додаючи його в чорний список на сервері, що забезпечує безпечний вихід.
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/token/logout/`
+- **Headers:** `Authorization: Bearer <access_token> (або передача токена в тілі залежно від налаштувань)`
+- **Request Body:** 
+```json
+  {
+    "refresh": "xxxxxxxx..."
+  }
+  ```
+- **Response Status:** `200 OK / 205 Reset Content`
+- **Response Body:**
+  ```json
+    {  }
+  ```
+  
 
 ## 3. Схема бази даних
 Реляційна структура бази даних (таблиці `users`, `habits`, `habit_logs` та зв'язки між ними):
