@@ -226,3 +226,32 @@
 
 > **TODO:** доробити логіку підрахунку серій підряд (streaks) виконання звичок.  
 > **TBD:** уточнити щодо винесення логів у окрему таблицю для архівування також можливо щось нове додати.
+
+---
+
+## 4. Встановлення та налаштування середовища
+
+### Встановлення залежностей, тестування та документація API
+- **Команди:**
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  pip install -r requirements.txt
+  pip install -r requirements-dev.txt
+  ```
+
+### Запуск тестів
+- **Команди:**
+  ```bash
+  python manage.py test
+  coverage run manage.py test
+  coverage report -m
+  ```
+  
+### Документація API та OpenAPI-схема
+- **Swagger UI:** `http://127.0.0.1:8000/api/docs/`
+- **ReDoc:** `http://127.0.0.1:8000/api/redoc/`
+- **Отримання OpenAPI-схеми:** `GET http://127.0.0.1:8000/api/schema/` або генерація у файл `schema.yml` (файл уже є в корені проєкту):
+  ```bash
+  python manage.py spectacular --file schema.yml
+   ```
