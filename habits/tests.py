@@ -1,106 +1,109 @@
-from django.contrib.auth.models import User
+import pytest
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 from .models import Habit, HabitLog
 
 
-class HabitApiTests(APITestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username="habituser",
-            email="habituser@example.com",
-            password="password123",
-        )
-        self.client.force_authenticate(user=self.user)
-        self.habit = Habit.objects.create(
-            user=self.user,
-            title="Читання",
-            description="30 хвилин щодня",
-        )
+@pytest.mark.django_db
+def test_list_habits(auth_client, habit):
+    url = reverse("habit-list-create")
+    response = auth_client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.data) == 1
 
-    def test_list_habits(self):
-        url = reverse("habit-list-create")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
 
-    def test_create_habit_success(self):
-        url = reverse("habit-list-create")
-        response = self.client.post(
-            url,
-            {"title": "Біг", "description": "20 хвилин"},
-            format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Habit.objects.filter(title="Біг").exists())
+@pytest.mark.django_db
+def test_create_habit_success(auth_client):
+    url = reverse("habit-list-create")
+    response = auth_client.post(
+        url,
+        {"title": "Біг", "description": "20 хвилин"},
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Habit.objects.filter(title="Біг").exists()
 
-    def test_create_habit_invalid(self):
-        url = reverse("habit-list-create")
-        response = self.client.post(url, {}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_habit_detail_get_and_patch(self):
-        url = reverse("habit-detail", kwargs={"pk": self.habit.pk})
-        get_resp = self.client.get(url)
-        self.assertEqual(get_resp.status_code, status.HTTP_200_OK)
+@pytest.mark.django_db
+def test_create_habit_invalid(auth_client):
+    url = reverse("habit-list-create")
+    response = auth_client.post(url, {}, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-        patch_resp = self.client.patch(
-            url,
-            {"title": "Читання ввечері"},
-            format="json",
-        )
-        self.assertEqual(patch_resp.status_code, status.HTTP_200_OK)
-        self.habit.refresh_from_db()
-        self.assertEqual(self.habit.title, "Читання ввечері")
 
-    def test_delete_habit_blocked_when_logs_exist(self):
-        HabitLog.objects.create(
-            habit=self.habit,
-            date="2026-11-15",
-            is_completed=True,
-        )
-        url = reverse("habit-detail", kwargs={"pk": self.habit.pk})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertTrue(Habit.objects.filter(pk=self.habit.pk).exists())
+@pytest.mark.django_db
+def test_habit_detail_get_and_patch(auth_client, habit):
+    url = reverse("habit-detail", kwargs={"pk": habit.pk})
+    get_resp = auth_client.get(url)
+    assert get_resp.status_code == status.HTTP_200_OK
 
-    def test_delete_habit_success(self):
-        url = reverse("habit-detail", kwargs={"pk": self.habit.pk})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Habit.objects.filter(pk=self.habit.pk).exists())
+    patch_resp = auth_client.patch(
+        url,
+        {"title": "Читання ввечері"},
+        format="json",
+    )
+    assert patch_resp.status_code == status.HTTP_200_OK
+    habit.refresh_from_db()
+    assert habit.title == "Читання ввечері"
 
-    def test_delete_habit_not_found(self):
-        url = reverse("habit-detail", kwargs={"pk": 99999})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_model_str(self):
-        log = HabitLog.objects.create(
-            habit=self.habit,
-            date="2026-11-15",
-            is_completed=True,
-        )
-        self.assertEqual(str(self.habit), "Читання")
-        self.assertIn("Читання", str(log))
-        self.assertIn("Виконано", str(log))
+@pytest.mark.django_db
+def test_delete_habit_blocked_when_logs_exist(auth_client, habit):
+    HabitLog.objects.create(
+        habit=habit,
+        date="2026-11-15",
+        is_completed=True,
+    )
+    url = reverse("habit-detail", kwargs={"pk": habit.pk})
+    response = auth_client.delete(url)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert Habit.objects.filter(pk=habit.pk).exists()
 
-    def test_patch_habit_invalid(self):
-        url = reverse("habit-detail", kwargs={"pk": self.habit.pk})
-        response = self.client.patch(url, {"title": ""}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_habit_unauthenticated(self):
-        self.client.force_authenticate(user=None)
-        url = reverse("habit-list-create")
-        response = self.client.post(
-            url,
-            {"title": "Без токена", "description": "Тест"},
-            format="json",
-        )
-        self.assertIn(
-            response.status_code,
-            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
-        )
+@pytest.mark.django_db
+def test_delete_habit_success(auth_client, habit):
+    url = reverse("habit-detail", kwargs={"pk": habit.pk})
+    response = auth_client.delete(url)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not Habit.objects.filter(pk=habit.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_habit_not_found(auth_client):
+    url = reverse("habit-detail", kwargs={"pk": 99999})
+    response = auth_client.delete(url)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def test_model_str(habit):
+    log = HabitLog.objects.create(
+        habit=habit,
+        date="2026-11-15",
+        is_completed=True,
+    )
+    assert str(habit) == "Читання"
+    assert "Читання" in str(log)
+    assert "Виконано" in str(log)
+
+
+@pytest.mark.django_db
+def test_patch_habit_invalid(auth_client, habit):
+    url = reverse("habit-detail", kwargs={"pk": habit.pk})
+    response = auth_client.patch(url, {"title": ""}, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+def test_create_habit_unauthenticated(api_client):
+    url = reverse("habit-list-create")
+    response = api_client.post(
+        url,
+        {"title": "Без токена", "description": "Тест"},
+        format="json",
+    )
+    assert response.status_code in (
+        status.HTTP_401_UNAUTHORIZED,
+        status.HTTP_403_FORBIDDEN,
+    )

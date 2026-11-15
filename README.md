@@ -243,9 +243,8 @@
 ### Запуск тестів
 - **Команди:**
   ```bash
-  python manage.py test
-  coverage run manage.py test
-  coverage report -m
+  pytest
+  pytest --cov=habits --cov=users --cov=config --cov-report=term-missing
   ```
   
 ### Документація API та OpenAPI-схема
