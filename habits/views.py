@@ -31,17 +31,13 @@ def habit_list_create(request):
         logger.info("Fetched habits list: count=%s", len(habits))
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    if request.method == "POST":
-        serializer = HabitSerializer(data=request.data)
-        if serializer.is_valid():
-            habit = serializer.save()
-            logger.info("Created habit: id=%s, user_id=%s", habit.id, request.user.id)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        logger.warning("Failed to create habit: invalid data")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    logger.warning("Unsupported method %s on habit_list_create", request.method)
-    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    serializer = HabitSerializer(data=request.data)
+    if serializer.is_valid():
+        habit = serializer.save()
+        logger.info("Created habit: id=%s, user_id=%s", habit.id, request.user.id)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    logger.warning("Failed to create habit: invalid data")
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(
@@ -76,23 +72,19 @@ def habit_detail(request, pk):
         logger.warning("Failed to update habit: id=%s, invalid data", habit.id)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == "DELETE":
-        if habit.logs.exists():
-            logger.warning("Blocked habit deletion: id=%s has linked logs", habit.id)
-            return Response(
-                {
-                    "error": (
-                        "Неможливо видалити звичку, оскільки до неї"
-                        " прив'язані логи виконання."
-                    )
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    if habit.logs.exists():
+        logger.warning("Blocked habit deletion: id=%s has linked logs", habit.id)
+        return Response(
+            {
+                "error": (
+                    "Неможливо видалити звичку, оскільки до неї"
+                    " прив'язані логи виконання."
+                )
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-        habit_id = habit.id
-        habit.delete()
-        logger.info("Deleted habit: id=%s, user_id=%s", habit_id, request.user.id)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    logger.warning("Unsupported method %s on habit_detail for id=%s", request.method, pk)
-    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    habit_id = habit.id
+    habit.delete()
+    logger.info("Deleted habit: id=%s, user_id=%s", habit_id, request.user.id)
+    return Response(status=status.HTTP_204_NO_CONTENT)
