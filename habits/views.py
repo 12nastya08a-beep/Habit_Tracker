@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -12,16 +13,25 @@ from .serializers import HabitSerializer
 logger = logging.getLogger(__name__)
 
 
-@api_view(['GET', 'POST'])
+@extend_schema(
+    methods=["GET"],
+    responses={200: HabitSerializer(many=True)},
+)
+@extend_schema(
+    methods=["POST"],
+    request=HabitSerializer,
+    responses={201: HabitSerializer, 400: None},
+)
+@api_view(["GET", "POST"])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def habit_list_create(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         habits = Habit.objects.all()
         serializer = HabitSerializer(habits, many=True)
         logger.info("Fetched habits list: count=%s", len(habits))
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         serializer = HabitSerializer(data=request.data)
         if serializer.is_valid():
             habit = serializer.save()
@@ -34,17 +44,30 @@ def habit_list_create(request):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-@api_view(['GET', 'PATCH', 'DELETE'])
+@extend_schema(
+    methods=["GET"],
+    responses={200: HabitSerializer, 404: None},
+)
+@extend_schema(
+    methods=["PATCH"],
+    request=HabitSerializer,
+    responses={200: HabitSerializer, 400: None, 404: None},
+)
+@extend_schema(
+    methods=["DELETE"],
+    responses={204: None, 400: None, 404: None},
+)
+@api_view(["GET", "PATCH", "DELETE"])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def habit_detail(request, pk):
     habit = get_object_or_404(Habit, pk=pk)
 
-    if request.method == 'GET':
+    if request.method == "GET":
         serializer = HabitSerializer(habit)
         logger.info("Fetched habit: id=%s", habit.id)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    if request.method == 'PATCH':
+    if request.method == "PATCH":
         serializer = HabitSerializer(habit, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -53,7 +76,7 @@ def habit_detail(request, pk):
         logger.warning("Failed to update habit: id=%s, invalid data", habit.id)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == 'DELETE':
+    if request.method == "DELETE":
         if habit.logs.exists():
             logger.warning("Blocked habit deletion: id=%s has linked logs", habit.id)
             return Response(
