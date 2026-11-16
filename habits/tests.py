@@ -107,3 +107,10 @@ def test_create_habit_unauthenticated(api_client):
         status.HTTP_401_UNAUTHORIZED,
         status.HTTP_403_FORBIDDEN,
     )
+
+
+@pytest.mark.django_db
+def test_get_habit_not_found(auth_client):
+    url = reverse("habit-detail", kwargs={"pk": 99999})
+    response = auth_client.get(url)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
